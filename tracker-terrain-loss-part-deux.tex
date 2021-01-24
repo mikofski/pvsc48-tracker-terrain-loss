@@ -22,7 +22,7 @@
 \title{Tracker Terrain Loss Part Two}
 
 \author{\IEEEauthorblockN{Mark A. Mikofski}
-	\IEEEauthorblockA{DNV, San Diego, CA, 92123, USA }}
+	\IEEEauthorblockA{DNV, Oakland, CA, 9612, USA }}
 
 \maketitle
 
@@ -49,22 +49,118 @@ Write something about \ref{fig:layouts}
 \label{fig:layouts}
 \end{figure}
 
-
 Write more stuff and make references to \cite{Marion2013}.
 
 \section{Methods}
 
-\subsection{Model}
+\subsection{Site Characteristics}
 
-Write stuff about SolarFarmer \cite{Mikofski_8547323}.
+The study uses a single-axis array funded by the Department of Energy and built by Cypress Creek Renewables \cite{CypressCreekRenewables2019} near Asheboro, NC at a latitude and longitude of 35.627994$^\circ$ and -79.872853$^\circ$ respectively. The site is asymmetric, with 25-qty variable length rows of 2-in-portrait and 18-modules wide single-axis trackers. The modules are 1.978-meters long, and the rows are spaced about 7.8-meters apart, so the GCR is about 51.5\%. There are 18-qty Longi LR6-72BP-360 360-watt bifacial modules per string, and three strings per each Huawei SUN2000-25KTL-US 25-kW inverter. The inverters each have three inputs, so that's one string per input.
 
+The terrain has a generally southwestern slope as shown contour map in Fig.~\ref{fig:hopewell_contour_map} with slightly steeper southern slopes on the east side of the array and milder western slopes on the north side of the array. The maximum and average slopes for each aisle from west to east in the array are summarized in Table~\ref{table:ew-slope-summary} starting with aisle 1 at the top northern tip of the array. The maximum and average north-south slopes for every 5 rows are shown in Table~\ref{table:row-slope-summary} starting with the 1st row on the western side of the array.
 
-\subsection{Validation}
-This section name doesn't make any sense.
+\begin{table}[htbp]
+\caption{Summary of East-West Slopes}
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Aisle} & \textbf{\textit{Maximum}}& \textbf{\textit{Average}}& \textbf{\textit{Direction}} \\
+\hline
+1& 7.81& 6.22& west \\
+\hline
+2& 7.58& 6.59& west \\
+\hline
+3& 6.7& 5.77& west \\
+\hline
+4&5.99& 5.26& west \\
+\hline
+5& 5.08& 4.28& west \\
+\hline
+6& 4.69& 3.54& west \\
+\hline
+7& 4.42& 3.28& west \\
+\hline
+8& 4.06& 3.99& west \\
+\hline
+\end{tabular}
+\label{table:ew-slope-summary}
+\end{center}
+\end{table}
+
+\begin{table}[htbp]
+\caption{Summary of North-South Slopes}
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Row} & \textbf{\textit{Maximum}}& \textbf{\textit{Average}}& \textbf{\textit{Direction}} \\
+\hline
+1&  1.76&  1.11& south \\
+\hline
+5&  2.04&  1.77& south \\
+\hline
+10& 2.95&  2.54& south \\
+\hline
+15& 4.81&  4.35& south \\
+\hline
+20& 6.66&  5.84& south \\
+\hline
+25& 8.35&  4.96& south \\
+\hline
+\end{tabular}
+\label{table:row-slope-summary}
+\end{center}
+\end{table}
+
+\subsection{Model Simulation}
+
+The system was modeled using SolarFarmer \cite{Mikofski_8547323} which allows parallel trackers to be oriented in any direction on any slope either in a plane or following the terrain. The Hopewell Friends Solar array was not modeled exactly the same as built or specified. The modeled site has 111-qty trackers with a total of 222 strings for a total DC size of 1.44-MW, which is slightly smaller than the actual size of 1.45-MW. Also the modeled site has 74 inverters with a DC/AC ratio less than one to remove the effects of clipping, versus the actual site which has only 45 inverters and a DC/AC ratio of 1.3. Also the simulated trackers spacing is uniform throughout the array and the tracker aisles are aligned, which also differs from the site as built and specified. Finally the panels were treated as monofacial, because bifacial is currently only possible for 2-dimensional simulations, and for this study we needed to take advantage of 3-dimensional modeling to capture the terrain. These changes were made for ease of modeling, and to make sure that variable row spacing and other artifacts did not affect the results, since we only want to observe the effect of slope.
+
+The site was modeled 24 times with both in-plane and follow terrain modes for trackers with a single layout, 2 layouts, and 3-layout models, see Fig.~\ref{fig:layouts}. As shown in the layout summary in Table~\ref{table:system-summary} this results in layouts with different orientations, so they will track slightly differently. The layout-plane contains all of the trackers when they are modeled in a single plane, and is the plane that determines how the trackers backtrack when they follow the terrain. Each layout was simulated with both standard \cite{Marion2013} and slope-aware \cite{Anderson2020} backtracking. Both 5-minute and hourly irradiance for the site were obtained from the NREL PSM3 website using pvlib-python.
+
+\begin{table}[htbp]
+\caption{Summary Tracker Layouts}
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Number of Layouts} & \textbf{\textit{1}}& \textbf{\textit{2}}& \textbf{\textit{3}} \\
+\hline
+number of trackers&    111& 54&  54 \\
+        &     &   57&  30 \\
+        &     &     &  27 \\
+\hline
+layout-plane azimuth (\degree)& 236.9&  247.26&  246.78 \\
+       &      &  223.03&  238.47 \\
+       &      &        &  207.58 \\
+\hline
+layout-plane tilt (\degree)&    2.83&    2.92&    2.89 \\
+    &        &    2.98&    3.58 \\
+    &        &        &    3.26 \\
+\hline
+tracker axis tilt (\degree)&   1.55&    1.13&    1.14 \\
+         &       &    2.18&    1.87 \\
+         &       &        &    2.89 \\
+\hline
+tracker side-slope (\degree)&  2.37& 2.69&    2.66 \\
+          &     & 2.03&    3.05 \\
+          &     &     &    1.51 \\
+\hline
+\end{tabular}
+\label{table:system-summary}
+\end{center}
+\end{table}
+
 
 \section{Results}
 
-\subsection{Model Parameters}
+The tracker terrain loss was calculated using the following formula:
+
+\begin{equation}
+\text{Tracker Terrain Loss} = 1 - \frac{Y_\text{terrain}}{Y_\text{plane}}\label{eq:tracker-terrain-loss}
+\end{equation}
+
+In \ref{eq:tracker-terrain-loss}, $Y_\text{terrain}$ and $Y_\text{plane}$ are the energy yield in $kWh/kW_p$ of the trackers following the terrain and in a mono-plane respectively. The simulated energy yield for 5-minute input data with standard backtracking are shown in Table~\ref{table:standard-5min}. Each row refers to two simulations in a plane and following terrain, respectively, and subdivided into either 1, 2, or 3 layouts for a total of six simulations. The tracker terrain loss can be calculated using \ref{eq:tracker-terrain-loss} as 2.4\%, 1.8\%, and 1.6\% for 1, 2, or 3 layouts respectively.
+
+Table~\ref{table:slope-5min} repeats the simulations with slope-aware backtracking enabled. The calculated tracker terrain losses are nearly identical to the standard backtracking case. However, it's interesting that the global incident irradiance (GI) is slightly greater, by about 0.01\% for slope-aware backtracking, presumably because the trackers take advantage of the southwest slope, and the in-plane energy yield is also negligibly greater, but the following terrain simulations is slightly lower. The non-uniform shade from variable terrain has an outsized effect on performance and quickly negates any gains form slope-aware backtracking
 
 \begin{table}[htbp]
 \caption{Energy Yield for Tracker Layouts for 5-minute Input Data with Standard Backtracking}
@@ -98,13 +194,13 @@ This section name doesn't make any sense.
 \textbf{outs}& \textbf{\textit{Mode}}&    \textbf{\textit{$kWh/m^2$}}& \textbf{\textit{$kWh / kW_p$}}& \textbf{\textit{\%}}&      \textbf{\textit{\%}} \\
 \hline
 1& In Plane& 2045&    1695.9& 2.2& 0 \\
-1& Follow&       &    1654.8& 2.4& 2.2 \\
+ & Follow&       &    1654.8& 2.4& 2.2 \\
 \hline
 2& In Plane& 2046.2&  1696.2& 2.2& 0 \\
-2& Follow&         &  1664.3& 2.3& 1.7 \\
+ & Follow&         &  1664.3& 2.3& 1.7 \\
 \hline
 3& In Plane& 2047.2&  1697.7& 2.2& 0 \\
-3& Follow&         &  1669.8& 2.3& 1.5 \\
+ & Follow&         &  1669.8& 2.3& 1.5 \\
 \hline
 \end{tabular}
 \label{table:slope-5min}
@@ -155,10 +251,10 @@ This section name doesn't make any sense.
 \label{table:slope-1hr}
 \end{center}
 \end{table}
-\subsection{Validation Metrics}
+
 
 \section{Conclusions}
-Write the conclusions.
+The Hopewell Friends Solar power plant was simulated with SolarFarmer to calculate tracker terrain loss. This site has variable terrain and an average 4\% southwest slope. The tracker terrain loss for the entire site was 2.4\%. When dividing the site into two and three layouts, the tracker terrain loss decreased to 1.8\% and 1.6\% respectively. The simulations were repeated with 5-minute and 1-hour input data, but the tracker terrain loss was insensitive to input data resolution for this particular site. The simulations were also repeated with slope-aware backtracking algorithm, but it had no effect on the tracker terrain loss. Future work would be to use SolarFarmer's independent tracker position time-series input with advanced tracking algorithms to measure the recovery.
 
 \section*{Acknowledgment}
 
